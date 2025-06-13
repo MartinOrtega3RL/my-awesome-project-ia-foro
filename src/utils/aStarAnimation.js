@@ -12,7 +12,7 @@ export const animationSteps = [
   { explored: [0, 1, 5, 6, 11, 12, 17, 18, 23, 24], current: 24, message: "¡Destino alcanzado! Camino óptimo encontrado" }
 ];
 
-export const getCellStyle = (index: number, isAnimating: boolean, animationStep: number, animatedCells: Set<number>) => {
+export const getCellStyle = (index, isAnimating, animationStep, animatedCells) => {
   const pathCells = [0, 6, 11, 12, 17, 24]; // Optimal path
   const obstacleCells = [7, 8, 13, 14]; // Obstacles
   

@@ -14,12 +14,6 @@ import {
 } from '@ant-design/icons';
 import { menuItems } from '../../data/aiData';
 
-interface NavigationProps {
-  mobileMenuVisible: boolean;
-  setMobileMenuVisible: (visible: boolean) => void;
-  scrollToSection: (sectionId: string) => void;
-}
-
 const iconMap = {
   HomeOutlined,
   BulbOutlined,
@@ -30,14 +24,14 @@ const iconMap = {
   SearchOutlined
 };
 
-export const Navigation: React.FC<NavigationProps> = ({
+export const Navigation = ({
   mobileMenuVisible,
   setMobileMenuVisible,
   scrollToSection
 }) => {
   const menuItemsWithIcons = menuItems.map(item => ({
     key: item.key,
-    icon: React.createElement(iconMap[item.icon as keyof typeof iconMap]),
+    icon: React.createElement(iconMap[item.icon]),
     label: item.label,
     onClick: () => scrollToSection(item.key)
   }));

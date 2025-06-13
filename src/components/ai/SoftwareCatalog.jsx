@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { EyeOutlined, LinkOutlined } from '@ant-design/icons';
 import { softwareData } from '../../data/aiData';
 
-export const SoftwareCatalog: React.FC = () => {
+export const SoftwareCatalog = () => {
   const softwareColumns = [
     { title: 'Nombre', dataIndex: 'nombre', key: 'nombre' },
     { title: 'Objetivo', dataIndex: 'objetivo', key: 'objetivo' },

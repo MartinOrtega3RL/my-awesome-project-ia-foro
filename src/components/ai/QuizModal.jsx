@@ -3,14 +3,7 @@ import React from 'react';
 import { Modal, Steps, Button } from 'antd';
 import { quizQuestions } from '../../data/aiData';
 
-interface QuizModalProps {
-  quizVisible: boolean;
-  setQuizVisible: (visible: boolean) => void;
-  currentQuizStep: number;
-  setCurrentQuizStep: (step: number) => void;
-}
-
-export const QuizModal: React.FC<QuizModalProps> = ({
+export const QuizModal = ({
   quizVisible,
   setQuizVisible,
   currentQuizStep,

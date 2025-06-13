@@ -4,12 +4,7 @@ import { Button } from 'antd';
 import { motion } from 'framer-motion';
 import { RocketOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 
-interface HeroSectionProps {
-  scrollToSection: (sectionId: string) => void;
-  setQuizVisible: (visible: boolean) => void;
-}
-
-export const HeroSection: React.FC<HeroSectionProps> = ({
+export const HeroSection = ({
   scrollToSection,
   setQuizVisible
 }) => {

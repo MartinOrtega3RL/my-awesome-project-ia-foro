@@ -5,10 +5,10 @@ import { motion } from 'framer-motion';
 import { PlayCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 import { animationSteps, getCellStyle } from '../../utils/aStarAnimation';
 
-export const AStarVisualizer: React.FC = () => {
+export const AStarVisualizer = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationStep, setAnimationStep] = useState(0);
-  const [animatedCells, setAnimatedCells] = useState(new Set<number>());
+  const [animatedCells, setAnimatedCells] = useState(new Set());
 
   const startAnimation = () => {
     setIsAnimating(true);

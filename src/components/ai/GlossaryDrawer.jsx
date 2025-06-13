@@ -3,12 +3,7 @@ import React from 'react';
 import { Drawer, Card, AutoComplete } from 'antd';
 import { glossaryTerms } from '../../data/aiData';
 
-interface GlossaryDrawerProps {
-  glossaryVisible: boolean;
-  setGlossaryVisible: (visible: boolean) => void;
-}
-
-export const GlossaryDrawer: React.FC<GlossaryDrawerProps> = ({
+export const GlossaryDrawer = ({
   glossaryVisible,
   setGlossaryVisible
 }) => {
