@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Layout, Menu, Button, Modal, Steps, Card, Table, Timeline, Drawer, Tooltip, Alert, Collapse, Tabs, AutoComplete } from 'antd';
 import { motion } from 'framer-motion';
@@ -10,7 +9,6 @@ import {
   BookOutlined,
   RobotOutlined,
   SearchOutlined,
-  UserOutlined,
   RocketOutlined,
   EyeOutlined,
   LinkOutlined,
@@ -61,8 +59,7 @@ const Index = () => {
     { key: 'deep-learning', icon: <DeploymentUnitOutlined />, label: 'Deep Learning', href: '#deep-learning' },
     { key: 'tipos-aprendizaje', icon: <BookOutlined />, label: 'Tipos de Aprendizaje', href: '#tipos-aprendizaje' },
     { key: 'agentes', icon: <RobotOutlined />, label: 'Agentes Inteligentes', href: '#agentes' },
-    { key: 'busqueda', icon: <SearchOutlined />, label: 'Búsqueda Heurística', href: '#busqueda' },
-    { key: 'autor', icon: <UserOutlined />, label: 'Acerca del autor', href: '#autor' }
+    { key: 'busqueda', icon: <SearchOutlined />, label: 'Búsqueda Heurística', href: '#busqueda' }
   ];
 
   // Software catalog data
@@ -894,61 +891,6 @@ const Index = () => {
                 Leer más sobre la historia de la IA
               </Button>
             </div>
-          </div>
-        </section>
-
-        {/* About Author Section */}
-        <section id="autor" className="py-20 bg-background">
-          <div className="max-w-4xl mx-auto px-4 text-center">
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-5xl font-bold mb-6 ai-text-gradient">Acerca del Autor</h2>
-              
-              <Card className="p-8 max-w-2xl mx-auto">
-                <div className="text-center">
-                  <div className="w-32 h-32 bg-gradient-to-br from-ai-primary to-ai-secondary rounded-full mx-auto mb-6 flex items-center justify-center">
-                    <UserOutlined className="text-4xl text-white" />
-                  </div>
-                  
-                  <h3 className="text-2xl font-semibold mb-4">Educador en Inteligencia Artificial</h3>
-                  
-                  <p className="text-muted-foreground mb-6">
-                    Esta aplicación web educativa fue creada con el objetivo de democratizar el conocimiento sobre 
-                    Inteligencia Artificial, haciendo accesibles los conceptos fundamentales a estudiantes, 
-                    profesionales y entusiastas de la tecnología.
-                  </p>
-                  
-                  <div className="grid md:grid-cols-2 gap-4 text-left">
-                    <div>
-                      <h4 className="font-semibold mb-2">Objetivo del Sitio</h4>
-                      <ul className="text-sm text-muted-foreground space-y-1">
-                        <li>• Educar sobre conceptos fundamentales de IA</li>
-                        <li>• Proporcionar recursos prácticos y actualizados</li>
-                        <li>• Fomentar el aprendizaje interactivo</li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold mb-2">Contexto Académico</h4>
-                      <ul className="text-sm text-muted-foreground space-y-1">
-                        <li>• Basado en cursos universitarios de IA</li>
-                        <li>• Contenido actualizado con últimos avances</li>
-                        <li>• Enfoque pedagógico y didáctico</li>
-                      </ul>
-                    </div>
-                  </div>
-                  
-                  <div className="mt-6 pt-6 border-t">
-                    <p className="text-sm text-muted-foreground">
-                      "La inteligencia artificial no se trata de reemplazar a los humanos, sino de amplificar la inteligencia humana."
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
           </div>
         </section>
       </Content>
