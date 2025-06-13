@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Layout, Menu, Button, Modal, Steps, Card, Table, Timeline, Drawer, Tooltip, Alert, Collapse, Tabs, AutoComplete } from 'antd';
 import { motion } from 'framer-motion';
@@ -167,10 +168,10 @@ const Index = () => {
     <Layout className="min-h-screen">
       {/* Header/Navbar */}
       <Header className="fixed w-full z-50 bg-white shadow-md">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-full">
+          <div className="flex items-center flex-shrink-0">
             <motion.div 
-              className="text-2xl font-bold ai-text-gradient mr-8"
+              className="text-xl lg:text-2xl font-bold ai-text-gradient"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
@@ -182,7 +183,7 @@ const Index = () => {
           {/* Desktop Menu */}
           <Menu 
             mode="horizontal" 
-            className="hidden lg:flex flex-1 justify-center border-none bg-transparent"
+            className="hidden lg:flex flex-1 justify-center border-none bg-transparent ml-8"
             items={menuItems.map(item => ({
               key: item.key,
               icon: item.icon,
@@ -193,7 +194,7 @@ const Index = () => {
           
           {/* Mobile Menu Button */}
           <Button 
-            className="lg:hidden"
+            className="lg:hidden flex-shrink-0"
             type="text"
             icon={<MenuOutlined />}
             onClick={() => setMobileMenuVisible(true)}
