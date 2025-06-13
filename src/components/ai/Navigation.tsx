@@ -1,0 +1,98 @@
+
+import React from 'react';
+import { Menu, Button, Drawer } from 'antd';
+import { motion } from 'framer-motion';
+import {
+  HomeOutlined,
+  BulbOutlined,
+  BranchesOutlined,
+  DeploymentUnitOutlined,
+  BookOutlined,
+  RobotOutlined,
+  SearchOutlined,
+  MenuOutlined
+} from '@ant-design/icons';
+import { menuItems } from '../../data/aiData';
+
+interface NavigationProps {
+  mobileMenuVisible: boolean;
+  setMobileMenuVisible: (visible: boolean) => void;
+  scrollToSection: (sectionId: string) => void;
+}
+
+const iconMap = {
+  HomeOutlined,
+  BulbOutlined,
+  BranchesOutlined,
+  DeploymentUnitOutlined,
+  BookOutlined,
+  RobotOutlined,
+  SearchOutlined
+};
+
+export const Navigation: React.FC<NavigationProps> = ({
+  mobileMenuVisible,
+  setMobileMenuVisible,
+  scrollToSection
+}) => {
+  const menuItemsWithIcons = menuItems.map(item => ({
+    key: item.key,
+    icon: React.createElement(iconMap[item.icon as keyof typeof iconMap]),
+    label: item.label,
+    onClick: () => scrollToSection(item.key)
+  }));
+
+  return (
+    <>
+      <div className="fixed w-full z-50 bg-white shadow-md">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+          <div className="flex items-center flex-shrink-0 min-w-0">
+            <motion.div 
+              className="text-lg lg:text-xl font-bold ai-text-gradient truncate"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              🤖 Explorando la IA
+            </motion.div>
+          </div>
+          
+          {/* Desktop Menu */}
+          <Menu 
+            mode="horizontal" 
+            className="hidden lg:flex flex-1 justify-center border-none bg-transparent ml-8"
+            items={menuItemsWithIcons}
+          />
+          
+          {/* Mobile Menu Button */}
+          <Button 
+            className="lg:hidden flex-shrink-0"
+            type="text"
+            icon={<MenuOutlined />}
+            onClick={() => setMobileMenuVisible(true)}
+          />
+        </div>
+      </div>
+
+      {/* Mobile Menu Drawer */}
+      <Drawer
+        title="Navegación"
+        placement="right"
+        onClose={() => setMobileMenuVisible(false)}
+        open={mobileMenuVisible}
+        className="lg:hidden"
+      >
+        <Menu
+          mode="vertical"
+          items={menuItemsWithIcons.map(item => ({
+            ...item,
+            onClick: () => {
+              scrollToSection(item.key);
+              setMobileMenuVisible(false);
+            }
+          }))}
+        />
+      </Drawer>
+    </>
+  );
+};

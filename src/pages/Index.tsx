@@ -1,24 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Button, Modal, Steps, Card, Table, Timeline, Drawer, Tooltip, Alert, Collapse, Tabs, AutoComplete } from 'antd';
+import React, { useState } from 'react';
+import { Layout, Menu, Button, Modal, Card, Table, Timeline, Tooltip, Alert, Collapse, Tabs } from 'antd';
 import { motion } from 'framer-motion';
-import {
-  HomeOutlined,
-  BulbOutlined,
-  BranchesOutlined,
-  DeploymentUnitOutlined,
-  BookOutlined,
-  RobotOutlined,
-  SearchOutlined,
-  RocketOutlined,
-  EyeOutlined,
-  LinkOutlined,
-  HistoryOutlined,
-  QuestionCircleOutlined,
-  MenuOutlined,
-  PlayCircleOutlined,
-  PauseCircleOutlined,
-  ReloadOutlined
-} from '@ant-design/icons';
+import { BookOutlined } from '@ant-design/icons';
+
+// Import new components
+import { Navigation } from '../components/ai/Navigation';
+import { HeroSection } from '../components/ai/HeroSection';
+import { AStarVisualizer } from '../components/ai/AStarVisualizer';
+import { SoftwareCatalog } from '../components/ai/SoftwareCatalog';
+import { HistoryTimeline } from '../components/ai/HistoryTimeline';
+import { QuizModal } from '../components/ai/QuizModal';
+import { GlossaryDrawer } from '../components/ai/GlossaryDrawer';
+
+// Import data
+import { timelineData } from '../data/aiData';
 
 const { Header, Content, Footer } = Layout;
 const { Panel } = Collapse;
@@ -29,81 +24,6 @@ const Index = () => {
   const [glossaryVisible, setGlossaryVisible] = useState(false);
   const [currentQuizStep, setCurrentQuizStep] = useState(0);
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
-  
-  // A* Animation state
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [animationStep, setAnimationStep] = useState(0);
-  const [animatedCells, setAnimatedCells] = useState(new Set());
-
-  // A* Animation steps - simulating the pathfinding process
-  const animationSteps = [
-    { explored: [0], current: 0, message: "Comenzamos en A (inicio)" },
-    { explored: [0, 1], current: 1, message: "Explorando vecinos de A" },
-    { explored: [0, 1, 5], current: 5, message: "Evaluando costos y heurística" },
-    { explored: [0, 1, 5, 6], current: 6, message: "Encontrando mejor ruta" },
-    { explored: [0, 1, 5, 6, 11], current: 11, message: "Continuando búsqueda" },
-    { explored: [0, 1, 5, 6, 11, 12], current: 12, message: "Evaluando camino óptimo" },
-    { explored: [0, 1, 5, 6, 11, 12, 17], current: 17, message: "Acercándose al destino" },
-    { explored: [0, 1, 5, 6, 11, 12, 17, 18], current: 18, message: "Refinando ruta" },
-    { explored: [0, 1, 5, 6, 11, 12, 17, 18, 23], current: 23, message: "Último paso antes del destino" },
-    { explored: [0, 1, 5, 6, 11, 12, 17, 18, 23, 24], current: 24, message: "¡Destino alcanzado! Camino óptimo encontrado" }
-  ];
-
-  const startAnimation = () => {
-    setIsAnimating(true);
-    setAnimationStep(0);
-    setAnimatedCells(new Set());
-  };
-
-  const resetAnimation = () => {
-    setIsAnimating(false);
-    setAnimationStep(0);
-    setAnimatedCells(new Set());
-  };
-
-  useEffect(() => {
-    if (isAnimating && animationStep < animationSteps.length) {
-      const timer = setTimeout(() => {
-        const currentStepData = animationSteps[animationStep];
-        setAnimatedCells(new Set(currentStepData.explored));
-        setAnimationStep(prev => prev + 1);
-      }, 1500);
-
-      return () => clearTimeout(timer);
-    } else if (animationStep >= animationSteps.length) {
-      setIsAnimating(false);
-    }
-  }, [isAnimating, animationStep]);
-
-  // Get cell style based on animation state
-  const getCellStyle = (index) => {
-    const pathCells = [0, 6, 11, 12, 17, 24]; // Optimal path
-    const obstacleCells = [7, 8, 13, 14]; // Obstacles
-    
-    if (index === 0) return 'bg-green-500 text-white border-green-600';
-    if (index === 24) return 'bg-red-500 text-white border-red-600';
-    if (obstacleCells.includes(index)) return 'bg-gray-800 text-white border-gray-900';
-    
-    if (isAnimating || animatedCells.size > 0) {
-      const currentStepData = animationSteps[Math.min(animationStep - 1, animationSteps.length - 1)] || { explored: [], current: -1 };
-      
-      if (currentStepData.current === index) {
-        return 'bg-orange-400 text-white border-orange-500 animate-pulse';
-      }
-      if (animatedCells.has(index)) {
-        return pathCells.includes(index) 
-          ? 'bg-yellow-400 text-black border-yellow-500' 
-          : 'bg-blue-200 text-black border-blue-300';
-      }
-    } else {
-      // Static final state
-      if (pathCells.includes(index) && index !== 0 && index !== 24) {
-        return 'bg-yellow-400 text-black border-yellow-500';
-      }
-    }
-    
-    return 'bg-white text-black border-gray-300';
-  };
 
   // Scroll to section function
   const scrollToSection = (sectionId: string) => {
@@ -113,253 +33,23 @@ const Index = () => {
     }
   };
 
-  // Quiz data
-  const quizQuestions = [
-    {
-      title: "¿Cuál es tu nivel actual en IA?",
-      content: "Principiante completo|Algo de conocimiento|Intermedio|Avanzado"
-    },
-    {
-      title: "¿Qué te interesa más?",
-      content: "Machine Learning|Deep Learning|Robótica|Procesamiento de lenguaje natural"
-    },
-    {
-      title: "¿Cuál es tu objetivo?",
-      content: "Aprender conceptos básicos|Implementar proyectos|Uso profesional|Investigación académica"
-    }
-  ];
-
-  // Menu items
-  const menuItems = [
-    { key: 'inicio', icon: <HomeOutlined />, label: 'Inicio', href: '#inicio' },
-    { key: 'que-es-ia', icon: <BulbOutlined />, label: '¿Qué es la IA?', href: '#que-es-ia' },
-    { key: 'machine-learning', icon: <BranchesOutlined />, label: 'Machine Learning', href: '#machine-learning' },
-    { key: 'deep-learning', icon: <DeploymentUnitOutlined />, label: 'Deep Learning', href: '#deep-learning' },
-    { key: 'tipos-aprendizaje', icon: <BookOutlined />, label: 'Tipos de Aprendizaje', href: '#tipos-aprendizaje' },
-    { key: 'agentes', icon: <RobotOutlined />, label: 'Agentes Inteligentes', href: '#agentes' },
-    { key: 'busqueda', icon: <SearchOutlined />, label: 'Búsqueda Heurística', href: '#busqueda' }
-  ];
-
-  // Software catalog data
-  const softwareData = [
-    {
-      key: '1',
-      nombre: 'TensorFlow',
-      objetivo: 'Framework de machine learning de código abierto',
-      enlace: 'https://tensorflow.org',
-      licencia: 'Apache 2.0',
-      año: 2015,
-      autor: 'Google'
-    },
-    {
-      key: '2',
-      nombre: 'PyTorch',
-      objetivo: 'Biblioteca de machine learning para Python',
-      enlace: 'https://pytorch.org',
-      licencia: 'BSD',
-      año: 2016,
-      autor: 'Meta AI'
-    },
-    {
-      key: '3',
-      nombre: 'Scikit-learn',
-      objetivo: 'Biblioteca de machine learning para Python',
-      enlace: 'https://scikit-learn.org',
-      licencia: 'BSD',
-      año: 2007,
-      autor: 'David Cournapeau'
-    },
-    {
-      key: '4',
-      nombre: 'OpenAI GPT',
-      objetivo: 'Modelo de lenguaje generativo pre-entrenado',
-      enlace: 'https://openai.com',
-      licencia: 'Comercial',
-      año: 2018,
-      autor: 'OpenAI'
-    },
-    {
-      key: '5',
-      nombre: 'Keras',
-      objetivo: 'API de alto nivel para redes neuronales',
-      enlace: 'https://keras.io',
-      licencia: 'MIT',
-      año: 2015,
-      autor: 'François Chollet'
-    }
-  ];
-
-  // Software table columns
-  const softwareColumns = [
-    { title: 'Nombre', dataIndex: 'nombre', key: 'nombre' },
-    { title: 'Objetivo', dataIndex: 'objetivo', key: 'objetivo' },
-    { title: 'Licencia', dataIndex: 'licencia', key: 'licencia' },
-    { title: 'Año', dataIndex: 'año', key: 'año' },
-    { title: 'Autor', dataIndex: 'autor', key: 'autor' },
-    {
-      title: 'Acciones',
-      key: 'acciones',
-      render: (_, record) => (
-        <div className="space-x-2">
-          <Button 
-            type="primary" 
-            size="small" 
-            icon={<EyeOutlined />}
-            onClick={() => window.open(record.enlace, '_blank')}
-          >
-            Ver Demo
-          </Button>
-          <Button 
-            size="small" 
-            icon={<LinkOutlined />}
-            onClick={() => window.open(record.enlace, '_blank')}
-          >
-            Ir al Sitio
-          </Button>
-        </div>
-      )
-    }
-  ];
-
-  // Timeline data
-  const timelineData = [
-    { label: '1950', children: 'Alan Turing publica "Computing Machinery and Intelligence"' },
-    { label: '1956', children: 'Se acuña el término "Inteligencia Artificial" en Dartmouth' },
-    { label: '1997', children: 'Deep Blue de IBM vence al campeón mundial de ajedrez Garry Kasparov' },
-    { label: '2012', children: 'AlexNet revoluciona el reconocimiento de imágenes con deep learning' },
-    { label: '2016', children: 'AlphaGo vence al campeón mundial de Go' },
-    { label: '2020', children: 'GPT-3 demuestra capacidades avanzadas de procesamiento de lenguaje natural' },
-    { label: '2022', children: 'ChatGPT populariza la IA conversacional para el público general' }
-  ];
-
-  // Glossary data
-  const glossaryTerms = [
-    { term: 'Algoritmo', definition: 'Conjunto de reglas o instrucciones definidas para resolver un problema' },
-    { term: 'Machine Learning', definition: 'Subcampo de la IA que permite a las máquinas aprender sin ser programadas explícitamente' },
-    { term: 'Red neuronal', definition: 'Modelo computacional inspirado en el funcionamiento del cerebro humano' },
-    { term: 'Deep Learning', definition: 'Técnica de machine learning basada en redes neuronales profundas' },
-    { term: 'Algoritmo genético', definition: 'Técnica de optimización inspirada en la evolución natural' }
-  ];
-
   return (
     <Layout className="min-h-screen">
       {/* Header/Navbar */}
-      <Header className="fixed w-full z-50 bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-full">
-          <div className="flex items-center flex-shrink-0">
-            <motion.div 
-              className="text-xl lg:text-2xl font-bold ai-text-gradient"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              🤖 Explorando la IA
-            </motion.div>
-          </div>
-          
-          {/* Desktop Menu */}
-          <Menu 
-            mode="horizontal" 
-            className="hidden lg:flex flex-1 justify-center border-none bg-transparent ml-8"
-            items={menuItems.map(item => ({
-              key: item.key,
-              icon: item.icon,
-              label: item.label,
-              onClick: () => scrollToSection(item.key)
-            }))}
-          />
-          
-          {/* Mobile Menu Button */}
-          <Button 
-            className="lg:hidden flex-shrink-0"
-            type="text"
-            icon={<MenuOutlined />}
-            onClick={() => setMobileMenuVisible(true)}
-          />
-        </div>
-      </Header>
-
-      {/* Mobile Menu Drawer */}
-      <Drawer
-        title="Navegación"
-        placement="right"
-        onClose={() => setMobileMenuVisible(false)}
-        open={mobileMenuVisible}
-        className="lg:hidden"
-      >
-        <Menu
-          mode="vertical"
-          items={menuItems.map(item => ({
-            key: item.key,
-            icon: item.icon,
-            label: item.label,
-            onClick: () => {
-              scrollToSection(item.key);
-              setMobileMenuVisible(false);
-            }
-          }))}
+      <Header className="p-0">
+        <Navigation
+          mobileMenuVisible={mobileMenuVisible}
+          setMobileMenuVisible={setMobileMenuVisible}
+          scrollToSection={scrollToSection}
         />
-      </Drawer>
+      </Header>
 
       <Content className="pt-16">
         {/* Hero Section */}
-        <section id="inicio" className="min-h-screen flex items-center justify-center ai-gradient relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white rounded-full float-animation"></div>
-            <div className="absolute top-32 right-20 w-16 h-16 border-2 border-white rounded-lg float-animation" style={{animationDelay: '2s'}}></div>
-            <div className="absolute bottom-20 left-1/4 w-12 h-12 border-2 border-white rounded-full float-animation" style={{animationDelay: '4s'}}></div>
-          </div>
-          
-          <div className="text-center text-white z-10 max-w-4xl mx-auto px-4">
-            <motion.h1 
-              className="text-6xl md:text-8xl font-bold mb-6 tracking-tight"
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              Explorando la
-              <br />
-              <span className="text-yellow-300">Inteligencia Artificial</span>
-            </motion.h1>
-            
-            <motion.p 
-              className="text-xl md:text-2xl mb-8 opacity-90"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              Descubre los fundamentos, aplicaciones y el futuro de la IA
-              <br />
-              a través de una experiencia interactiva y educativa
-            </motion.p>
-            
-            <motion.div 
-              className="space-x-4"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-            >
-              <Button 
-                type="primary" 
-                size="large" 
-                icon={<RocketOutlined />}
-                className="bg-white text-purple-600 border-none hover:bg-gray-100 pulse-glow"
-                onClick={() => scrollToSection('que-es-ia')}
-              >
-                Empezar el Recorrido
-              </Button>
-              
-              <Button 
-                size="large" 
-                icon={<QuestionCircleOutlined />}
-                className="bg-transparent border-white text-white hover:bg-white hover:text-purple-600"
-                onClick={() => setQuizVisible(true)}
-              >
-                Evaluación Inicial
-              </Button>
-            </motion.div>
-          </div>
-        </section>
+        <HeroSection
+          scrollToSection={scrollToSection}
+          setQuizVisible={setQuizVisible}
+        />
 
         {/* What is AI Section */}
         <section id="que-es-ia" className="py-20 bg-background">
@@ -463,7 +153,7 @@ const Index = () => {
               <Panel header="Algoritmos Principales" key="2">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <h4 className="font-semibold mb-2">Algoritmos Supervisados:</h4>
+                    <h4 className="font-semibold">Algoritmos Supervisados:</h4>
                     <ul className="space-y-1 text-sm">
                       <li>• Regresión Lineal</li>
                       <li>• Árboles de Decisión</li>
@@ -472,7 +162,7 @@ const Index = () => {
                     </ul>
                   </div>
                   <div>
-                    <h4 className="font-semibold mb-2">Algoritmos No Supervisados:</h4>
+                    <h4 className="font-semibold">Algoritmos No Supervisados:</h4>
                     <ul className="space-y-1 text-sm">
                       <li>• K-Means Clustering</li>
                       <li>• Análisis de Componentes Principales</li>
@@ -812,83 +502,7 @@ const Index = () => {
             </div>
 
             {/* Enhanced A* Visualization with Animation */}
-            <Card className="p-6 mb-8">
-              <h3 className="text-2xl font-semibold mb-4 text-center">Simulador Visual: Algoritmo A*</h3>
-              <div className="bg-gray-100 p-8 rounded-lg">
-                <div className="text-center mb-4">
-                  <p className="text-muted-foreground mb-2">Ejemplo: Encontrar el camino más corto de A a B</p>
-                  <div className="inline-flex items-center space-x-8">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">A</div>
-                      <span>Inicio</span>
-                    </div>
-                    <div className="flex-1 h-0.5 bg-gradient-to-r from-green-500 via-yellow-500 to-red-500"></div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold">B</div>
-                      <span>Destino</span>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Animation Controls */}
-                <div className="flex justify-center mb-4 space-x-4">
-                  <Button 
-                    type="primary" 
-                    icon={<PlayCircleOutlined />}
-                    onClick={startAnimation}
-                    disabled={isAnimating}
-                    className="bg-ai-primary hover:bg-ai-primary/80"
-                  >
-                    Iniciar Simulación
-                  </Button>
-                  <Button 
-                    icon={<ReloadOutlined />}
-                    onClick={resetAnimation}
-                  >
-                    Reiniciar
-                  </Button>
-                </div>
-
-                {/* Grid Visualization */}
-                <div className="grid grid-cols-5 gap-2 max-w-md mx-auto mb-4">
-                  {Array.from({ length: 25 }, (_, i) => (
-                    <motion.div 
-                      key={i}
-                      className={`w-8 h-8 border-2 flex items-center justify-center text-xs font-bold transition-all duration-300 ${getCellStyle(i)}`}
-                      animate={{
-                        scale: animationStep > 0 && animatedCells.has(i) ? [1, 1.1, 1] : 1,
-                      }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      {i === 0 ? 'A' : i === 24 ? 'B' : [7, 8, 13, 14].includes(i) ? '■' : ''}
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* Animation Status */}
-                {isAnimating && animationStep > 0 && animationStep <= animationSteps.length && (
-                  <div className="text-center mb-4">
-                    <Alert
-                      message={`Paso ${animationStep}: ${animationSteps[animationStep - 1]?.message || ''}`}
-                      type="info"
-                      showIcon
-                      className="max-w-md mx-auto"
-                    />
-                  </div>
-                )}
-                
-                <div className="mt-4 text-center text-sm text-muted-foreground">
-                  <div className="flex justify-center space-x-4 flex-wrap">
-                    <span className="flex items-center mb-2"><div className="w-3 h-3 bg-green-500 rounded-full mr-1"></div>Inicio</span>
-                    <span className="flex items-center mb-2"><div className="w-3 h-3 bg-red-500 rounded-full mr-1"></div>Destino</span>
-                    <span className="flex items-center mb-2"><div className="w-3 h-3 bg-yellow-400 rounded-full mr-1"></div>Camino Óptimo</span>
-                    <span className="flex items-center mb-2"><div className="w-3 h-3 bg-blue-200 rounded-full mr-1"></div>Explorado</span>
-                    <span className="flex items-center mb-2"><div className="w-3 h-3 bg-orange-400 rounded-full mr-1"></div>Actual</span>
-                    <span className="flex items-center mb-2"><div className="w-3 h-3 bg-gray-800 rounded-full mr-1"></div>Obstáculo</span>
-                  </div>
-                </div>
-              </div>
-            </Card>
+            <AStarVisualizer />
 
             <div className="grid md:grid-cols-2 gap-8">
               <Card className="p-6">
@@ -928,81 +542,10 @@ const Index = () => {
         </section>
 
         {/* Software Catalog Section */}
-        <section className="py-20 bg-background">
-          <div className="max-w-7xl mx-auto px-4">
-            <motion.div 
-              className="text-center mb-16"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-5xl font-bold mb-6 ai-text-gradient">Catálogo de Software de IA</h2>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Herramientas y frameworks esenciales para comenzar tu viaje en la Inteligencia Artificial
-              </p>
-            </motion.div>
-
-            <Card className="overflow-hidden">
-              <Table 
-                dataSource={softwareData}
-                columns={softwareColumns}
-                pagination={{
-                  pageSize: 10,
-                  showSizeChanger: true,
-                  showQuickJumper: true,
-                }}
-                scroll={{ x: true }}
-                className="w-full"
-              />
-            </Card>
-
-            <div className="mt-8 text-center">
-              <Button 
-                type="primary" 
-                size="large"
-                onClick={() => window.open('https://github.com/topics/artificial-intelligence', '_blank')}
-              >
-                Ver Más Software en GitHub
-              </Button>
-            </div>
-          </div>
-        </section>
+        <SoftwareCatalog />
 
         {/* Historical Timeline */}
-        <section className="py-20 bg-muted/30">
-          <div className="max-w-6xl mx-auto px-4">
-            <motion.div 
-              className="text-center mb-16"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-5xl font-bold mb-6 ai-text-gradient">Historia de la Inteligencia Artificial</h2>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Un recorrido por los hitos más importantes en el desarrollo de la IA
-              </p>
-            </motion.div>
-
-            <Card className="p-8">
-              <Timeline
-                items={timelineData}
-                mode="alternate"
-                className="custom-timeline"
-              />
-            </Card>
-
-            <div className="mt-8 text-center">
-              <Button 
-                icon={<HistoryOutlined />}
-                onClick={() => window.open('https://en.wikipedia.org/wiki/History_of_artificial_intelligence', '_blank')}
-              >
-                Leer más sobre la historia de la IA
-              </Button>
-            </div>
-          </div>
-        </section>
+        <HistoryTimeline />
       </Content>
 
       {/* Footer */}
@@ -1048,77 +591,18 @@ const Index = () => {
       </Footer>
 
       {/* Quiz Modal */}
-      <Modal
-        title="Evaluación Inicial - Conoce tu Nivel"
-        open={quizVisible}
-        onCancel={() => {
-          setQuizVisible(false);
-          setCurrentQuizStep(0);
-        }}
-        footer={null}
-        width={600}
-      >
-        <Steps current={currentQuizStep} className="mb-8">
-          <Steps.Step title="Nivel" />
-          <Steps.Step title="Intereses" />
-          <Steps.Step title="Objetivos" />
-        </Steps>
-        
-        {currentQuizStep < quizQuestions.length ? (
-          <div>
-            <h3 className="text-lg font-semibold mb-4">{quizQuestions[currentQuizStep].title}</h3>
-            <div className="space-y-2 mb-6">
-              {quizQuestions[currentQuizStep].content.split('|').map((option, index) => (
-                <Button 
-                  key={index}
-                  block 
-                  className="text-left"
-                  onClick={() => {
-                    if (currentQuizStep < quizQuestions.length - 1) {
-                      setCurrentQuizStep(currentQuizStep + 1);
-                    } else {
-                      setQuizVisible(false);
-                      setCurrentQuizStep(0);
-                      Modal.success({
-                        title: '¡Evaluación Completada!',
-                        content: 'Basado en tus respuestas, te recomendamos comenzar con la sección "¿Qué es la IA?" y continuar con Machine Learning.',
-                      });
-                    }
-                  }}
-                >
-                  {option}
-                </Button>
-              ))}
-            </div>
-          </div>
-        ) : null}
-      </Modal>
+      <QuizModal
+        quizVisible={quizVisible}
+        setQuizVisible={setQuizVisible}
+        currentQuizStep={currentQuizStep}
+        setCurrentQuizStep={setCurrentQuizStep}
+      />
 
       {/* Glossary Drawer */}
-      <Drawer
-        title="Glosario de Términos de IA"
-        placement="right"
-        onClose={() => setGlossaryVisible(false)}
-        open={glossaryVisible}
-        width={400}
-      >
-        <div className="space-y-6">
-          {glossaryTerms.map((item, index) => (
-            <Card key={index} size="small">
-              <h4 className="font-semibold text-ai-primary mb-2">{item.term}</h4>
-              <p className="text-sm text-muted-foreground">{item.definition}</p>
-            </Card>
-          ))}
-        </div>
-        
-        <div className="mt-8">
-          <AutoComplete
-            style={{ width: '100%' }}
-            placeholder="Buscar término..."
-            options={glossaryTerms.map(term => ({ value: term.term }))}
-          />
-        </div>
-      </Drawer>
+      <GlossaryDrawer
+        glossaryVisible={glossaryVisible}
+        setGlossaryVisible={setGlossaryVisible}
+      />
 
       {/* Floating Action Button */}
       <div className="fixed bottom-6 right-6 z-50">
